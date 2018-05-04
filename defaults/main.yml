@@ -1,0 +1,12 @@
+rh_subscribe_rhn_username: "{{ lookup('env', 'RHN_USERNAME')}}"
+rh_subscribe_rhn_password: "{{ lookup('env', 'RHN_PASSWORD')}}"
+rh_subscribe_rhn_autosubscribe: true
+rh_subscribe_rhn_pool_ids: false
+#  - exampleid1: 1
+#  - exampleid2: 1
+rh_subscribe_repos_enabled:
+  - rhel-7-server-rpms
+  - rhel-7-server-optional-rpms
+rh_subscribe_repos_force_enable: false
+rh_subscribe_activation_key: "{{ lookup('env', 'RHN_ACTIVATION_KEY')}}"
+rh_subscribe_org_id: "{{ lookup('env', 'RHN_ORG_ID')}}"
