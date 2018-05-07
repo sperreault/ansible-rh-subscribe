@@ -1,35 +1,42 @@
 ---
-  - name: Register as user with password and auto-subscribe to available content.
+  - name: Register as user with password.
     redhat_subscription:
       state: present
       username: "{{ rh_subscribe_rhn_username }}"
       password: "{{ rh_subscribe_rhn_password }}"
-      autosubscribe: "{{ rh_subscribe_rhn_autosubscribe }}"
-      force_register: "{{ rh_subscribe_repos_force_enable }}"
+      auto_attach: "{{ rh_subscribe_rhn_auto_attach }}"
+      force_register: "{{ rh_subscribe_force_register }}"
     register: rh_subscribe_register_result
     tags:
       - rh-subscribe
       - install
-    when: (rh_subscribe_activation_key == "")
+    when: (rh_subscribe_activation_key == "false")
 
-  - name: Register with activation key auto-subscribe to available content.
+
+  - name: Register with activation key.
     redhat_subscription:
       state: present
       activationkey: "{{ rh_subscribe_activation_key }}"
       org_id: "{{ rh_subscribe_org_id }}"
-      autosubscribe: "{{ rh_subscribe_rhn_autosubscribe }}"
-      force_register: "{{ rh_subscribe_repos_force_enable }}"
+      auto_attach: "{{ rh_subscribe_rhn_auto_attach }}"
+      force_register: "{{ rh_subscribe_force_register }}"
     register: rh_subscribe_register_result
     tags:
       - rh-subscribe
       - install
-    when: (rh_subscribe_activation_key != "")
+    when: (rh_subscribe_activation_key != "false")
+
+  - name: Auto attach was false, need to subscribe
+    redhat_subscription:
+      state: present
+      pool_ids: "{{ rh_subscribe_rhn_pool_ids }}"
+    when: ( rh_subscribe_rhn_pool_ids != "false" )
 
   - name: Remove all repos
     shell: subscription-manager repos --disable=*
-    when: ( rh_subscribe_register_result.changed ) or ( rh_subscribe_repos_force_enable == true )
+    when: ( rh_subscribe_register_result.changed ) or ( rh_subscribe_repos_force_enable == "true" )
 
   - name: Enable only rh_subscribe_repos_enabled
     shell: subscription-manager repos --enable="{{ item }}"
     with_items: "{{ rh_subscribe_repos_enabled }}"
-    when: ( rh_subscribe_register_result.changed ) or ( rh_subscribe_repos_force_enable == true )
+    when: ( rh_subscribe_register_result.changed ) or ( rh_subscribe_repos_force_enable == "true" )
